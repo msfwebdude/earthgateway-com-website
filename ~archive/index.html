@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!--
+    ASCII globe animation inspired by asciiart.website/art/2531
+    Original concept adapted and animated using original methodology.
+  -->
+  <title>Earth Gateway</title>
+  <meta charset="utf-8" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23000008'/><text y='.9em' font-size='90' fill='%2300ffff'>⌬</text></svg>">
+  <link rel="stylesheet" href="resources/css/style.css">
+  <style>
+    body {
+      text-align: left;
+    }
+
+    .bbs-wrap {
+      width: 640px;
+      margin: 0 auto;
+      padding: 20px 0;
+    }
+
+    /*-- header --*/
+    .header-box {
+      border: 1px solid #00ffff;
+      padding: 12px 16px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .header-wordmark {
+      color: #ffff00;
+      font-size: 18px;
+      letter-spacing: 0.15em;
+      text-shadow: 0 0 8px rgba(255, 255, 0, 0.4);
+      white-space: nowrap;
+    }
+
+    .header-wordmark span {
+      color: #ffffff;
+      font-size: 11px;
+      display: block;
+      letter-spacing: 0.1em;
+      margin-top: 4px;
+      text-shadow: none;
+      opacity: 0.6;
+    }
+
+    .header-torii {
+      color: #ff5555;
+      font-size: 11px;
+      line-height: 1.2;
+      white-space: pre;
+      opacity: 0.85;
+      flex: 1;
+      text-align: center;
+    }
+
+    .header-globe {
+      color: #00ffff;
+      font-size: 9px;
+      line-height: 1.15;
+      white-space: pre;
+      text-shadow: 0 0 4px rgba(0, 255, 255, 0.4);
+      flex-shrink: 0;
+    }
+
+    /*-- section divider --*/
+    .section-rule {
+      color: #008080;
+      margin: 16px 0 0 0;
+      font-size: 12px;
+      white-space: pre;
+    }
+
+    /*-- section header --*/
+    .section-header {
+      color: #ffff00;
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      margin: 0 0 8px 0;
+      padding: 2px 0;
+      border-bottom: 1px solid #003333;
+    }
+
+    /*-- door items --*/
+    .door-list {
+      list-style: none;
+      margin: 0 0 0 2px;
+      padding: 0;
+    }
+
+    .door-list li {
+      margin: 0;
+    }
+
+    .door-list a {
+      display: block;
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 12px;
+      padding: 2px 4px;
+      letter-spacing: 0.05em;
+      transition: background 0.12s, color 0.12s;
+    }
+
+    .door-list a:hover {
+      background: #ffffff;
+      color: #000008;
+    }
+
+    .door-list a .key {
+      color: #00ffff;
+      font-weight: bold;
+    }
+
+    .door-list a:hover .key {
+      color: #000008;
+    }
+
+    .door-list .soon {
+      color: #008080;
+      font-size: 12px;
+      padding: 2px 4px;
+      font-style: normal;
+    }
+
+    /*-- footer --*/
+    .footer {
+      margin-top: 24px;
+      padding-top: 8px;
+      border-top: 1px solid #003333;
+      color: #004444;
+      font-size: 10px;
+      letter-spacing: 0.05em;
+    }
+  </style>
+</head>
+<body>
+  <div class="bbs-wrap">
+
+    <!-- header -->
+    <div class="header-box">
+
+      <div class="header-wordmark">
+        EARTHGATEWAY
+        <span>earthgateway.com</span>
+      </div>
+
+      <pre class="header-torii">
+                                         
+                                   :!    
+                              wII!!+~    
+      $              cvcooo!""~~!+!!!+   
+     :++!::cv::!!!!!""~~~~!!!++++        
+       v!!!!!~!!~~~~~!+::::::c#          
+         RPXI++  """"~   v:              
+            v::  B"~+cvvvccIIIII         
+         IIIo:IIIIIcvoww0v:              
+            c:w          vv              
+            c:o         I:v              
+            v:          Ivv              
+            +:          ++:v             
+            ::          v+:v             
+           I++          ::::             
+           I++          v:::             
+           !+++         !!:+             
+           +!~+         :!!+             
+
+      </pre>
+
+      <pre class="header-globe" id="globe">loading...</pre>
+
+    </div>
+
+    <!-- tools -->
+    <div class="section-rule">╔══════════════════════════════════════════════════════════════════╗</div>
+    <div class="section-rule">║  TOOLS                                                           ║</div>
+    <div class="section-rule">╚══════════════════════════════════════════════════════════════════╝</div>
+    <ul class="door-list">
+      <li><a href="dual-rubber-stamp.html">[1] <span class="key">D</span>ual Rubber Stamp</a></li>
+      <li><a href="generate-strings.html">[2] <span class="key">G</span>enerate Strings</a></li>
+    </ul>
+
+    <!-- machine room -->
+    <div class="section-rule">╔══════════════════════════════════════════════════════════════════╗</div>
+    <div class="section-rule">║  MACHINE ROOM                                                    ║</div>
+    <div class="section-rule">╚══════════════════════════════════════════════════════════════════╝</div>
+    <ul class="door-list">
+      <li><span class="soon">[1] 6502 CPU Simulator</span></li>
+      <li><span class="soon">[2] Turing Complete</span></li>
+      <li><span class="soon">[3] Internal CPU Ops</span></li>
+    </ul>
+
+    <!-- the lab -->
+    <div class="section-rule">╔══════════════════════════════════════════════════════════════════╗</div>
+    <div class="section-rule">║  THE LAB                                                         ║</div>
+    <div class="section-rule">╚══════════════════════════════════════════════════════════════════╝</div>
+    <ul class="door-list">
+      <li><span class="soon">[1] Finite State Machine</span></li>
+    </ul>
+
+    <!-- footer -->
+    <div class="footer">
+      earthgateway.com &nbsp;|&nbsp; <span id="copyright"></span> &nbsp;|&nbsp; MIT License
+    </div>
+
+  </div>
+
+  <script>
+    //#region globe animation
+    const globeFrames = [
+      [
+        `            ,,,,,,`,
+        `        o#'9MMHb':'-,o,`,
+        `     .oH":HH\`, "' ' -*R&o,`,
+        `    dMMM*""'\`'      .oM"HM?.`,
+        `  ,MMM'          "HLbd< ?&H\\`,
+        ` .:MH ."\\          \` MM  MM&b`,
+        `. "*H    -        &MMMMMMMMMH:`,
+        `.    dboo        MMMMMMMMMMMM.`,
+        `.   dMMMMMMb      *MMMMMMMMMP.`,
+        `.    MMMMMMMP        *MMMMMP .`,
+        `     \`#MMMMM           MM6P ,`,
+        ` '    \`MMMP"           HM*\`,`,
+        `  '    :MM             .- ,`,
+        `   '.   \`#?..  .       ..'`,
+        `      -.   .         .-`,
+        `        ''-.oo,oo.-'' `,
+      ],
+      [
+        `            ,,,,,,`,
+        `        oo#'9MMHb':'-,,`,
+        `     .ooH":HH\`, "' ' -*R&,`,
+        `    d?MMM*""'\`'      .oM"HM.`,
+        `  ,M\\MM'          "HLbd< ?&H`,
+        ` .&:MH ."\\          \` MM  MMb`,
+        `.  "*H    -        &MMMMMMMMM:`,
+        `.     dboo        MMMMMMMMMMM.`,
+        `.    dMMMMMMb      *MMMMMMMMM.`,
+        `.     MMMMMMMP        *MMMMMP.`,
+        `      \`#MMMMM           MM6P,`,
+        ` '     \`MMMP"           HM*,`,
+        `  '     :MM             .-,`,
+        `   '.    \`#?..  .       .'`,
+        `      -.    .        .-`,
+        `        ''-.ooo,o.-'' `,
+      ],
+      [
+        `            ,,,,,,`,
+        `        o,o#'9MMHb':'-,`,
+        `     .o&oH":HH\`, "' ' -*R,`,
+        `    dM?MMM*""'\`'      .oM"H.`,
+        `  ,HM\\MM'          "HLbd< ?&`,
+        ` .M&:MH ."\\          \` MM  Mb`,
+        `.   "*H    -        &MMMMMMMM:`,
+        `.      dboo        MMMMMMMMMM.`,
+        `.     dMMMMMMb      *MMMMMMMM.`,
+        `.      MMMMMMMP        *MMMMM.`,
+        `       \`#MMMMM           MM6,`,
+        ` '      \`MMMP"           H*,`,
+        `  '      :MM             .,`,
+        `   '.     \`#?..  .       '`,
+        `      -.     .        .`,
+        `        ''-.oooo,.-'' `,
+      ],
+      [
+        `            ,,,,,,`,
+        `        o-,o#'9MMHb':',`,
+        `     .oR&oH":HH\`, "' ' -*,`,
+        `    dHM?MMM*""'\`'      .oM".`,
+        `  ,?HM\\MM'          "HLbd< &`,
+        ` .MM&:MH ."\\          \` MM  b`,
+        `.    "*H    -        &MMMMMMM:`,
+        `.       dboo        MMMMMMMMM.`,
+        `.      dMMMMMMb      *MMMMMMM.`,
+        `.       MMMMMMMP        *MMMM.`,
+        `        \`#MMMMM           MM,`,
+        ` '       \`MMMP"           H,`,
+        `  '       :MM             ,`,
+        `   '.      \`#?..  .      '`,
+        `      -.      .       .`,
+        `        ''-.,oooo.-'' `,
+      ],
+      [
+        `            ,,,,,,`,
+        `        o'-,o#'9MMHb':,`,
+        `     .o*R&oH":HH\`, "' ' -,`,
+        `    d"HM?MMM*""'\`'      .oM.`,
+        `  ,L?HM\\MM'          "HLbd<&`,
+        ` . MM&:MH ."\\          \` MM b`,
+        `.     "*H    -        &MMMMMM:`,
+        `.        dboo        MMMMMMMM.`,
+        `.       dMMMMMMb      *MMMMMM.`,
+        `.        MMMMMMMP        *MMM.`,
+        `         \`#MMMMM           M,`,
+        ` '        \`MMMP"           ,`,
+        `  '        :MM            ,`,
+        `   '.       \`#?..  .     '`,
+        `      -.       .       .`,
+        `        ''-.o,ooo.-'' `,
+      ],
+    ];
+
+    let globeFrame  = 0;
+    const globeEl   = document.getElementById('globe');
+
+    function renderGlobe() {
+      globeEl.textContent = globeFrames[globeFrame].join('\n');
+      globeFrame = (globeFrame + 1) % globeFrames.length;
+    }
+
+    renderGlobe();
+    setInterval(renderGlobe, 1500);
+    //#endregion
+
+    self.copyright.innerText = `Copyright (c) ${(new Date()).getFullYear()} Mike Firoved `;
+  </script>
+
+</body>
+</html>

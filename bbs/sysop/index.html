@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>SysOp</title>
+  <meta charset="utf-8" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="icon" href="../../resources/img/favicon.png">
+  <link rel="stylesheet" href="../../resources/css/style.css">
+  <style>
+    body {
+      text-align: left;
+    }
+
+    .bbs-wrap {
+      /* width: min(1100px, 90vw); */
+      margin: 0 auto;
+      padding: 20px 0;
+      text-align: center;
+    }
+
+    .profile-panel {
+      border: 1px solid #004444;
+      padding: 14px 18px;
+      margin-top: 8px;
+      font-size: 12px;
+      text-align: left;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .profile-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 6px;
+    }
+
+    .profile-label {
+      color: #008080;
+      width: 160px;
+      flex-shrink: 0;
+      letter-spacing: 0.05em;
+    }
+
+    .profile-value {
+      color: #ffffff;
+    }
+
+    .profile-value a {
+      color: #00ffff;
+      text-decoration: none;
+    }
+
+    .profile-value a:hover {
+      text-decoration: underline;
+    }
+
+    .profile-divider {
+      border: none;
+      border-top: 1px solid #002222;
+      margin: 10px 0;
+    }
+
+    .profile-bio {
+      color: #ffffff;
+      font-size: 16px;
+      line-height: 1.6;
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="bbs-wrap">
+
+    <div class="title-bar">⚷ SYSOP</div>
+
+    <div class="profile-panel">
+
+      <div class="profile-row">
+        <span class="profile-label">GITHUB HANDLE</span>
+        <span class="profile-value" id="profileLogin">loading...</span>
+      </div>
+
+      <div class="profile-row">
+        <span class="profile-label">IRL</span>
+        <span class="profile-value" id="profileName">loading...</span>
+      </div>
+
+      <div class="profile-row">
+        <span class="profile-label">REPOS</span>
+        <span class="profile-value" id="profileRepos">loading...</span>
+      </div>
+
+      <div class="profile-row">
+        <span class="profile-label">GITHUB FOLLOWERS</span>
+        <span class="profile-value" id="profileFollowers">loading...</span>
+      </div>
+
+      <div class="profile-row">
+        <span class="profile-label">GITHUB MEMBER SINCE</span>
+        <span class="profile-value" id="profileCreated">loading...</span>
+      </div>
+
+      <div class="profile-row" style="display: none;">
+        <span class="profile-label">SITE</span>
+        <span class="profile-value" id="profileBlog">loading...</span>
+      </div>
+
+      <hr class="profile-divider">
+
+      <div class="profile-bio" id="profileBio">loading...</div>
+
+    </div>
+
+  </div>
+
+  <script>
+    const CACHE_KEY = 'sysop_profile';
+    const CACHE_TTL = 15 * 60 * 1000; // 15 minutes in ms
+
+    function renderProfile(data) {
+      self.profileName.textContent      = data.name || data.login;
+      self.profileLogin.textContent     = data.login;
+      self.profileRepos.textContent     = data.public_repos;
+      self.profileFollowers.textContent = data.followers;
+      self.profileBio.innerHTML         = `This website is a creative reflection of my <a href="https://github.com/msfwebdude" target="_blank" class="footer-link" style="color: #099;" >GitHub</a> repos. <br>&nbsp;<br>${data.bio}`;
+
+      const createdDate = new Date(data.created_at);
+      self.profileCreated.textContent = createdDate.toLocaleDateString('en-US', {
+        year:  'numeric',
+        month: 'long',
+        day:   'numeric'
+      });
+
+      if (data.blog) {
+        const blogUrl = data.blog.startsWith('http') ? data.blog : `https://${data.blog}`;
+        self.profileBlog.innerHTML = `<a href="${blogUrl}" target="_blank">${data.blog}</a>`;
+      }
+      else {
+        self.profileBlog.textContent = '(none listed)';
+      }
+    }
+
+    async function loadProfile() {
+      const cached = localStorage.getItem(CACHE_KEY);
+
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        const age    = Date.now() - parsed.timestamp;
+
+        if (age < CACHE_TTL) {
+          renderProfile(parsed.data);
+          return;
+        }
+      }
+
+      const response = await fetch('https://api.github.com/users/msfwebdude');
+      const data     = await response.json();
+
+      localStorage.setItem(CACHE_KEY, JSON.stringify({
+        timestamp: Date.now(),
+        data:      data
+      }));
+
+      renderProfile(data);
+    }
+
+    document.addEventListener('DOMContentLoaded', loadProfile);
+
+  </script>
+</body>
+</html>

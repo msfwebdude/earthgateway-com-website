@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Generate Strings</title>
+  <meta charset="utf-8" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23000008'/><text y='.9em' font-size='90' fill='%2300ffff'>✲</text></svg>">
+  <link rel="stylesheet" href="../../resources/css/style.css">
+  <script src="../../resources/js/main.js" defer></script>
+  <style>
+    textarea {
+      width: 800px;
+      height: 400px;
+      padding: 5px;
+    }
+
+    .panel {
+      display: inline-block;
+      text-align: left;
+    }
+
+    .controls-row {
+      margin-bottom: 12px;
+      color: #ffffff;
+      font-size: 12px;
+    }
+
+    .controls-row input[type="number"],
+    .controls-row select {
+      background-color: #000008;
+      border: solid 1px #00ffff;
+      font-family: 'Share Tech Mono', Consolas, 'Lucida Console', monospace;
+      font-size: 12px;
+      color: #ffffff;
+      outline: none;
+      padding: 3px 6px;
+      border-radius: 2px;
+    }
+
+    .controls-row input[type="number"] {
+      width: 50px;
+      text-align: center;
+    }
+
+    .controls-row select {
+      cursor: pointer;
+    }
+
+    .controls-row select option {
+      background-color: #000008;
+      color: #ffffff;
+    }
+
+    #goBtn {
+      background: transparent;
+      border: 1px solid #00ffff;
+      color: #00ffff;
+      font-family: 'Share Tech Mono', Consolas, 'Lucida Console', monospace;
+      font-size: 12px;
+      padding: 4px 14px;
+      cursor: pointer;
+      border-radius: 2px;
+      opacity: 0.75;
+      transition: background 0.15s, color 0.15s;
+      min-width: 76px;
+      min-height: 26px;
+      vertical-align: middle;
+    }
+
+    #goBtn:hover {
+      background: #00ffff;
+      color: #000008;
+      opacity: 1;
+    }
+
+    #log {
+      height: 80px;
+      margin-top: 8px;
+      font-size: 11px;
+      font-family: 'Share Tech Mono', Consolas, 'Lucida Console', monospace;
+      color: #008080;
+      background-color: #000008;
+      border: solid 1px #004444;
+      display: block;
+      scrollbar-width: none;
+      -ms-overflow-style: none;     
+      &::-webkit-scrollbar { display: none; }  
+    }    
+  </style>
+</head>
+<body>
+  <p><br /></p>
+  <div class="title-bar">✲ GENERATE STRINGS</div>
+
+  <div class="panel">
+
+    <div class="controls-row">
+      generate
+      <input type="number" id="numberOfStrings" value="100" inputmode="numeric">
+      strings with
+      <input type="number" id="numberOfCharacters" value="64" inputmode="numeric">
+      characters each using method
+      <select id="stringMethod">
+        <option value="w4w">word number word...</option>
+        <option value="rnd">random characters</option>
+      </select>
+      <button onclick="generateStrings()" id="goBtn">▶ go</button>
+    </div>
+
+    <textarea id="stringList" spellcheck="false" ondblclick="selectWholeLine(this)">Ready</textarea>
+
+    <textarea id="log" readonly spellcheck="false"></textarea>
+
+  </div>
+
+  <p><br /></p>
+  <script type="text/javascript">
+    self.log.value = `loading...\n`;
+    self.log.scrollTop = self.log.scrollHeight;
+
+
+    let words = [
+      "abundance",
+      "abundances",
+      "abundant",
+      "abundantly",
+      "accept",
+      "accepted",
+      "accepts",
+      "accessibility",
+      "accessible",
+      "accuracies",
+      "accuracy",
+      "accurate",
+      "achieve",
+      "achieved",
+      "achieves",
+      "acquisition",
+      "acquisitions",
+      "action",
+      "actions",
+      "administration",
+      "administrations",
+      "admiration",
+      "admit",
+      "admits",
+      "affinities",
+      "affinity",
+      "agencies",
+      "agency",
+      "agriculture",
+      "alcohol",
+      "alcohols",
+      "allow",
+      "allows",
+      "ambiguities",
+      "ambiguity",
+      "ambiguous",
+      "ample",
+      "ancestor",
+      "ancestors",
+      "appendix",
+      "appendixes",
+      "approve",
+      "approved",
+      "approves",
+      "argument",
+      "arguments",
+      "arrest",
+      "arrests",
+      "aspect",
+      "aspects",
+      "assumption",
+      "assumptions",
+      "astonishing",
+      "asylum",
+      "asylums",
+      "athlete",
+      "athletes",
+      "audience",
+      "audiences",
+      "aviation",
+      "awful",
+      "battlefield",
+      "battlefields",
+      "bloodies",
+      "bloody",
+      "blue",
+      "blues",
+      "borrow",
+      "borrows",
+      "bounce",
+      "bounces",
+      "brainstorm",
+      "brainstorms",
+      "broken",
+      "bronze",
+      "bronzes",
+      "buffet",
+      "buffets",
+      "calculation",
+      "calculations",
+      "cancel",
+      "cancels",
+      "capitulate",
+      "capitulates",
+      "catalogue",
+      "catalogues",
+      "catch",
+      "catched",
+      "catcher",
+      "catchers",
+      "catches",
+      "cede",
+      "cedes",
+      "celebration",
+      "celebrations",
+      "central",
+      "centrals",
+      "ceremonies",
+      "ceremony",
+      "champion",
+      "champions",
+      "character",
+      "characters",
+      "charities",
+      "charity",
+      "charter",
+      "charters",
+      "chemistry",
+      "chicken",
+      "chickens",
+      "church",
+      "churches",
+      "circuit",
+      "circuits",
+      "circumstance",
+      "circumstances",
+      "citizen",
+      "citizens",
+      "coalition",
+      "coalitions",
+      "coffee",
+      "coffees",
+      "column",
+      "columns",
+      "comfort",
+      "comforts",
+      "command",
+      "commands",
+      "compartment",
+      "compartments",
+      "competition",
+      "competitions",
+      "complain",
+      "complains",
+      "comprehensive",
+      "comprehensives",
+      "concede",
+      "concedes",
+      "conceive",
+      "conceives",
+      "concentration",
+      "concentrations",
+      "confess",
+      "confesses",
+      "confession",
+      "confessions",
+      "conflict",
+      "conflicts",
+      "connection",
+      "connections",
+      "consolidate",
+      "consolidates",
+      "consultation",
+      "consultations",
+      "convenience",
+      "conveniences",
+      "cooperate",
+      "cooperates",
+      "costume",
+      "costumes",
+      "countryside",
+      "countrysides",
+      "courage",
+      "create",
+      "creates",
+      "critic",
+      "critics",
+      "cross",
+      "crosses",
+      "crusade",
+      "crusades",
+      "crystal",
+      "crystals",
+      "current",
+      "currents",
+      "custody",
+      "decorative",
+      "defeat",
+      "defeats",
+      "demonstrator",
+      "demonstrators",
+      "desire",
+      "desires",
+      "despair",
+      "despairs",
+      "despise",
+      "despises",
+      "determine",
+      "determines",
+      "development",
+      "developments",
+      "diameter",
+      "diameters",
+      "differ",
+      "differs",
+      "dignities",
+      "dignity",
+      "diplomacy",
+      "diplomat",
+      "diplomatic",
+      "diplomatics",
+      "diplomats",
+      "director",
+      "directors",
+      "disabilities",
+      "disability",
+      "disappointed",
+      "disappointment",
+      "disappointments",
+      "disconcerted",
+      "discontented",
+      "discouraged",
+      "discretion",
+      "discrimination",
+      "disenchanted",
+      "disgruntled",
+      "disillusioned",
+      "display",
+      "displays",
+      "dissatisfied",
+      "distressed",
+      "divide",
+      "divides",
+      "domestic",
+      "domestics",
+      "domination",
+      "dominations",
+      "double",
+      "doubles",
+      "earth",
+      "earthflax",
+      "earthquake",
+      "earthquakes",
+      "earths",
+      "economies",
+      "economist",
+      "economists",
+      "economy",
+      "education",
+      "educations",
+      "effect",
+      "effects",
+      "effort",
+      "efforts",
+      "elapse",
+      "elapses",
+      "embark",
+      "embarked",
+      "embarks",
+      "embrace",
+      "embraces",
+      "embryo",
+      "embryos",
+      "employee",
+      "employees",
+      "enemies",
+      "enemy",
+      "entertainment",
+      "entertainments",
+      "entitlement",
+      "entitlements",
+      "permanents",
+      "philosophies",
+      "philosophy",
+      "physics",
+      "picture",
+      "pictures",
+      "pleasure",
+      "pleasures",
+      "poetry",
+      "polite",
+      "possibilities",
+      "possibility",
+      "powder",
+      "powders",
+      "premature",
+      "preparation",
+      "preparations",
+      "present",
+      "presents",
+      "presidencies",
+      "presidency",
+      "principle",
+      "principles",
+      "produce",
+      "produces",
+      "promotion",
+      "promotions",
+      "proportion",
+      "proportions",
+      "psychologies",
+      "psychology",
+      "publisher",
+      "publishers",
+      "pyramid",
+      "pyramids",
+      "qualification",
+      "qualifications",
+      "quarrel",
+      "quarrels",
+      "racism",
+      "radiation",
+      "radiations",
+      "rainbow",
+      "rainbows",
+      "receipt",
+      "receipts",
+      "recommendation",
+      "recommendations",
+      "recording",
+      "recordings",
+      "recruit",
+      "recruits",
+      "recycle",
+      "recycles",
+      "refund",
+      "refunds",
+      "refuse",
+      "refused",
+      "refuses",
+      "registration",
+      "registrations",
+      "reject",
+      "rejected",
+      "rejects",
+      "relative",
+      "relatives",
+      "release",
+      "releases",
+      "relieve",
+      "relieves",
+      "relinquish",
+      "relinquishes",
+      "remedies",
+      "remedy",
+      "repeat",
+      "repeats",
+      "replace",
+      "replaces",
+      "restrain",
+      "restrains",
+      "retailer",
+      "retailers",
+      "reverse",
+      "reverses",
+      "reward",
+      "rewarded",
+      "rewards",
+      "rocket",
+      "rockets",
+      "runner",
+      "runners",
+      "sacred",
+      "safeties",
+      "safety",
+      "sailor",
+      "sailors",
+      "salmon",
+      "salmons",
+      "salvation",
+      "sandwich",
+      "sandwiches",
+      "satisfied",
+      "sausage",
+      "sausages",
+      "science",
+      "sciences",
+      "scratch",
+      "scratches",
+      "screw",
+      "screws",
+      "season",
+      "seasons",
+      "secretaries",
+      "secretary",
+      "secretion",
+      "secretions",
+      "senior",
+      "seniors",
+      "sentiment",
+      "sentiments",
+      "sequence",
+      "sequences",
+      "settle",
+      "settles",
+      "shatter",
+      "shatters",
+      "short",
+      "shorts",
+      "shower",
+      "showers",
+      "shrink",
+      "shrinks",
+      "silence",
+      "silenced",
+      "silences",
+      "skeleton",
+      "skeletons",
+      "slogan",
+      "slogans",
+      "smooth",
+      "smooths",
+      "sodium",
+      "source",
+      "sources",
+      "species",
+      "speculate",
+      "speculates",
+      "spell",
+      "spells",
+      "spontaneous",
+      "squeeze",
+      "squeezes",
+      "still",
+      "stills",
+      "strange",
+      "strict",
+      "strike",
+      "strikes",
+      "structure",
+      "structures",
+      "student",
+      "students",
+      "stunning",
+      "suitcase",
+      "suitcases",
+      "summaries",
+      "summary",
+      "sunshine",
+      "super",
+      "superintendent",
+      "superintendents",
+      "supers",
+      "surrender",
+      "surrenders",
+      "surround",
+      "surrounds",
+      "swallow",
+      "swallows",
+      "swipe",
+      "swipes",
+      "system",
+      "systems",
+      "tactic",
+      "tactics",
+      "talkative",
+      "temptation",
+      "temptations",
+      "terrifies",
+      "terrify",
+      "thoughtful",
+      "threat",
+      "threats",
+      "tiptoe",
+      "tiptoes",
+      "tolerate",
+      "tolerates",
+      "tragedies",
+      "tragedy",
+      "train",
+      "training",
+      "trainings",
+      "trains",
+      "translate",
+      "translates",
+      "transparent",
+      "trouser",
+      "trousers",
+      "trustee",
+      "trustees",
+      "turkey",
+      "turkeys",
+      "unique",
+      "unlikely",
+      "unpleasant",
+      "update",
+      "updates",
+      "valley",
+      "valleys",
+      "varieties",
+      "variety",
+      "vessel",
+      "vessels",
+      "wheat",
+      "widen",
+      "widens",
+      "willpower",
+      "withdrawal",
+      "withdrawals",
+      "word",
+      "wording",
+      "wordings",
+      "words",
+      "work",
+      "works",
+      "workshop",
+      "workshops",
+      "writer",
+      "writers",
+      "yield",
+      "yields"
+    ];
+
+
+    function generateStrings() {
+        self.goBtn.enabled = false;
+        self.stringList.value = "";
+        var n = self.numberOfStrings.value;
+        var c = parseInt(self.numberOfCharacters.value);
+        var i = 0;
+        var x = 0;
+        var d = (new Date()).getTime();
+
+        var stringMethod = self.stringMethod.value;
+
+        switch (stringMethod) {
+            case "rnd":
+                var allowedCharArray = randomizeArray("abcdefghijklmnopqrstuvwxyz0123456789!#$%ABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""));
+                var l = allowedCharArray.length;
+
+                while (i < n){
+                    var string = "";
+                    for (let n = 0; n <= c; n++) {
+                        var r = Math.floor(Math.random() * l);
+                        string += allowedCharArray[r];
+                    }
+                    
+                    self.stringList.value += string + "\n";
+                    i++;
+                    x++;
+                }
+                break;
+
+            case "w4w":
+                while (i < n) {
+                    var tempString = "";
+                    var evenOdd = 0;
+                    while (tempString.length < c) {
+                        if (evenOdd == 0) {
+                            evenOdd = 1;
+                            tempString += getWord();
+                        }
+                        else {
+                            evenOdd = 0;
+                            tempString += Math.random().toString().substr(2, 4);
+                        }
+                    }
+                    if (tempString.length == c) {
+                        self.stringList.value += tempString + "\n";
+                        i++;
+                    }
+
+                    x++;
+                }            
+                break;
+        
+            default:
+                break;
+        }
+
+        d = (new Date()).getTime() - d;
+        var r = Math.round((n / x) * 1000) / 10;
+        self.log.value += `generated ${n} strings in ${x} attempts (${r}% pass rate). took ${d} ms.\n`;
+        self.log.scrollTop = self.log.scrollHeight;
+        self.goBtn.enabled = true;
+    }
+
+    function getWord() {
+        var idx = Math.floor((Math.random() * words.length))
+        var wrd = words[idx]
+        if (Math.random() > 0.5) {
+            wrd = wrd.substr(0, 1).toUpperCase() + wrd.substr(1);
+        }
+        return wrd
+    }
+
+    function randomizeArray(arr) {
+        var arrInp = arr;
+        var arrOut = [];
+        var i;
+        for (i = 0; i < 32; i++) {
+            arrOut = [];
+            arrInp.forEach(
+                function (item, index) {
+                    if (Math.random() > 0.5) {
+                        arrOut.push(item);
+                    }
+                    else {
+                        arrOut.unshift(item);
+                    }
+                }
+            );
+            arrInp = arrOut;
+        }
+
+        return arrOut;
+    }
+
+    function selectWholeLine(obj) {
+      const selTxt = obj.value;
+      const selStr = obj.selectionStart;
+      const selEnd = obj.selectionEnd;
+      let lastLE  = 0;
+      let nextLE  = selTxt.length;
+
+      for (let i = selStr; i > 0; i--) {
+        if (selTxt.substr(i, 1) == "\n") {
+          lastLE = i + 1;
+          break;
+        }
+      }
+
+      for (let i = selEnd; i < nextLE; i++) {
+        if (selTxt.substr(i, 1) == "\n") {
+          nextLE = i;
+          break;
+        }
+      }
+
+      obj.setSelectionRange(lastLE, nextLE);
+    }
+
+    var d = (new Date()).getTime();
+    words = randomizeArray(words);
+    d = (new Date()).getTime() - d;
+    self.log.value += `randomized ${words.length} words in ${d} ms.\n`;
+    self.log.scrollTop = self.log.scrollHeight;    
+
+    self.stringList.value = "Ready";
+        
+  </script>
+</body>
+
+</html>

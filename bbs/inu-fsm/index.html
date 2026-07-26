@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Inu - Finite State Machine</title>
+  <meta charset="utf-8" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23000008'/><text y='.9em' font-size='90' fill='%23ff5555'>♥</text></svg>">
+  <link rel="stylesheet" href="../../resources/css/style.css">
+  <style>
+    body {
+      text-align: left;
+    }
+
+    .bbs-wrap {
+      width: min(700px, 90vw);
+      margin: 0 auto;
+      padding: 20px 0;
+    }
+
+    /*-- status row --*/
+    .status-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 12px;
+      font-size: 12px;
+    }
+
+    .state-label {
+      color: #ffff00;
+      letter-spacing: 0.1em;
+    }
+
+    .state-value {
+      color: #ffffff;
+      letter-spacing: 0.1em;
+    }
+
+    .time-value {
+      color: #008080;
+      margin-left: auto;
+      font-size: 11px;
+    }
+
+    /*-- controls --*/
+    .controls {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .ctrl-btn {
+      background: transparent;
+      border: 1px solid #00ffff;
+      color: #00ffff;
+      font-family: 'Share Tech Mono', Consolas, 'Lucida Console', monospace;
+      font-size: 12px;
+      padding: 3px 12px;
+      cursor: pointer;
+      border-radius: 2px;
+      opacity: 0.75;
+      transition: background 0.12s, color 0.12s;
+      min-width: 76px;
+      text-align: center;
+    }
+
+    .ctrl-btn:hover {
+      background: #00ffff;
+      color: #000008;
+      opacity: 1;
+    }
+
+    .ctrl-btn.danger {
+      border-color: #ff5555;
+      color: #ff5555;
+    }
+
+    .ctrl-btn.danger:hover {
+      background: #ff5555;
+      color: #000008;
+    }
+
+    /*-- stats panel --*/
+    .stats-panel {
+      border: 1px solid #004444;
+      padding: 10px 12px;
+      margin-bottom: 12px;
+      font-size: 12px;
+    }
+
+    .stat-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      color: #008080;
+      width: 90px;
+      flex-shrink: 0;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-bar {
+      color: #00ffff;
+      letter-spacing: 0;
+      flex-shrink: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    .stat-bar.warning {
+      color: #cc6600;
+    }
+
+    .stat-bar.critical {
+      color: #ff5555;
+    }
+
+    .stat-value {
+      color: #ffffff;
+      font-size: 11px;
+      width: 36px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .stat-divider {
+      border: none;
+      border-top: 1px solid #002222;
+      margin: 6px 0;
+    }
+
+    .stat-row-small {
+      display: flex;
+      gap: 24px;
+      font-size: 11px;
+      color: #008080;
+      margin-top: 2px;
+    }
+
+    .stat-row-small span {
+      color: #ffffff;
+    }
+
+    /*-- dialogue log --*/
+    #dialogue {
+      width: 100%;
+      height: 160px;
+      font-size: 12px;
+      color: #ffffff;
+      background-color: #000008;
+      border: 1px solid #004444;
+      box-sizing: border-box;
+      resize: none;
+      padding: 6px;
+    }
+
+    #dialogue.dead {
+      border-color: #ff5555;
+      color: #ff5555;
+    }
+
+    .dialogue-label {
+      color: #008080;
+      font-size: 11px;
+      margin-bottom: 4px;
+      letter-spacing: 0.08em;
+    }
+  </style>
+</head>
+<body>
+  <div class="bbs-wrap">
+
+    <div class="title-bar">♥ INU - Finite State Machine</div>
+
+    <!-- status row -->
+    <div class="status-row">
+      <span class="state-label">STATE:</span>
+      <span class="state-value" id="stateDisplay">REST</span>
+      <span class="time-value" id="timeDisplay">12.00 hrs</span>
+    </div>
+
+    <!-- controls -->
+    <div class="controls">
+      <button class="ctrl-btn" onclick="userAction('FOOD')" id="btnFeed">[<b>F</b>]eed</button>
+      <button class="ctrl-btn" onclick="userAction('PLAY')" id="btnPlay">[<b>P</b>]lay</button>
+      <button class="ctrl-btn" onclick="userAction('CLEN')" id="btnClean">[<b>C</b>]lean Up</button>
+      <button class="ctrl-btn danger" onclick="restart()" id="btnRestart" style="display: none;">[<b>R</b>]estart</button>
+      <a href="../../" class="ctrl-btn" style="line-height: 1.8; text-decoration: none;">[<b>Q</b>]uit to menu</a>
+    </div>
+
+    <!-- stats panel -->
+    <div class="stats-panel">
+
+      <div class="stat-row">
+        <span class="stat-label">STOMACH</span>
+        <span class="stat-bar" id="barStomach">██████████</span>
+        <span class="stat-value" id="valStomach">50%</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">BLADDER</span>
+        <span class="stat-bar" id="barBladder">███░░░░░░░</span>
+        <span class="stat-value" id="valBladder">30%</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">ENERGY</span>
+        <span class="stat-bar" id="barEnergy">█████░░░░░</span>
+        <span class="stat-value" id="valEnergy">50%</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">LOVE</span>
+        <span class="stat-bar" id="barLove">██████░░░░</span>
+        <span class="stat-value" id="valLove">60%</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">POSITIVITY</span>
+        <span class="stat-bar" id="barPositivity">█████████░</span>
+        <span class="stat-value" id="valPositivity">90%</span>
+      </div>
+
+      <hr class="stat-divider">
+
+      <div class="stat-row">
+        <span class="stat-label">CLEANLINESS</span>
+        <span class="stat-bar" id="barClean">████████░░</span>
+        <span class="stat-value" id="valClean">80%</span>
+      </div>
+
+      <hr class="stat-divider">
+
+      <div class="stat-row-small">
+        <div>TIME &nbsp;<span id="timeSmall">12.00 hrs</span></div>
+        <div>CLEAN &nbsp;<span id="cleanPct">80%</span></div>
+      </div>
+
+    </div>
+
+    <!-- dialogue log -->
+    <div class="dialogue-label">// dialogue</div>
+    <textarea id="dialogue" readonly spellcheck="false"></textarea>
+
+  </div>
+
+  <script>
+
+    function r2(n) {
+      return Math.round(n * 100) / 100;
+    }
+
+    function progressBar(value, width = 20) {
+      const filled = Math.round(Math.min(Math.max(value, 0), 1) * width);
+      const empty  = width - filled;
+      return '█'.repeat(filled) + '░'.repeat(empty);
+    }
+
+    function barClass(value, lowThreshold, highThreshold) {
+      if (value <= lowThreshold)  return 'critical';
+      if (value <= highThreshold) return 'warning';
+      return '';
+    }
+
+    function log(message) {
+      self.dialogue.value += message + '\n';
+      self.dialogue.scrollTop = self.dialogue.scrollHeight;
+    }
+
+    const environment = {
+      cleanliness: 0.8,
+      hour: 12
+    };
+
+    let lastMessage = '';
+
+    const dog = {
+      state: 'REST',
+      stomach:    0.5,
+      bladder:    0.3,
+      positivity: 0.9,
+      love:       0.6,
+      energy:     0.5,
+      thresholds: {
+        stomach_down:     0.1,
+        stomach_nice:     0.5,
+        stomach_high:     1.0,
+        bladder_down:     0.1,
+        bladder_nice:     0.5,
+        bladder_high:     1.0,
+        positivity_down:  0.3,
+        positivity_nice:  0.7,
+        positivity_high:  1.0,
+        love_down:        0.4,
+        love_nice:        0.6,
+        love_high:        1.0,
+        energy_down:      0.3,
+        energy_nice:      0.7,
+        energy_high:      0.9
+      },
+      enterState: function(s) {
+        let newState    = '';
+        let message     = '';
+        let lastState   = `${dog.state}`;
+
+        if (dog.state === s) { return; }
+        dog.state = s;
+
+        switch (s) {
+          case 'BTHR':
+            message = '(crosses legs)';
+            
+            newState = environment.cleanliness < 0.5 ? 'GPEE' : 'REST';
+            break;
+
+          case 'GPEE':
+            message             = '(lifts leg) Ahhh...';
+            dog.bladder         = r2(dog.bladder    - 0.85);
+            dog.positivity      = r2(dog.positivity + 0.01);
+            dog.energy          = r2(dog.energy     - 0.1);
+            environment.cleanliness = r2(environment.cleanliness - 0.25);
+            newState = 'REST';
+            break;
+
+          case 'HNGR':
+            message = '(stomach rumbles, walks over to bowl and points)';
+            break;
+
+          case 'DEAD':
+            message = '(Without love, positivity and health and energy, life is very hard to sustain. With the last ounce of energy, the dog wimpers for a pardon of love and hope, but finds none, quietly lets go. Your dog is dead. (//-T) You Failed.)';
+            self.dialogue.classList.add('dead');
+            self.btnFeed.disabled    = true;
+            self.btnPlay.disabled    = true;
+            self.btnClean.disabled   = true;
+            self.btnRestart.style.display = 'inline-block';
+            break;
+
+          case 'RVNS':
+            message    = '(stomach rumbles, walks over to bowl and points) Bark, Bark, Bark hmmmm';
+            dog.energy = r2(dog.energy - 0.1);
+            break;
+
+          case 'FOOD':
+            if (lastState === 'RVNS') {
+              message     = '(knocking you over at the sight of food, the dog rassles the dog food bag from you and starts to chew through the bag to eat.)';
+              dog.stomach = r2(dog.stomach + 0.4);
+            }
+            else {
+              message = dog.stomach < dog.thresholds.stomach_nice
+                ? 'heh heh heh (the dog pants at the sight of food. You place the bowl down and you barely retract your hand as the dog eats the food)'
+                : '(Smiling as only a happy dog can smile, you place the food down and the dog starts to eat graciously)';
+            }
+            dog.energy          = r2(dog.energy          + 0.2);
+            dog.stomach         = r2(dog.stomach         + 0.5);
+            dog.positivity      = r2(dog.positivity      + 0.1);
+            dog.love            = r2(dog.love             + 0.1);
+            environment.cleanliness = r2(environment.cleanliness - 0.025);
+            newState = 'REST';
+            break;
+
+          case 'PLAY':
+            if (dog.love > dog.thresholds.love_nice) {
+              message        = '(playing joyfully, this dog is truly happy) bark bark bark';
+              dog.positivity = r2(dog.positivity + 0.3);
+              dog.love       = r2(dog.love       + 0.5);
+              dog.energy     = r2(dog.energy     - 0.4);
+            }
+            else {
+              message        = '(playing with master) bark bark bark';
+              dog.positivity = r2(dog.positivity + 0.1);
+              dog.love       = r2(dog.love       + 0.3);
+              dog.energy     = r2(dog.energy     - 0.3);
+            }
+            newState = 'REST';
+            break;
+
+          case 'SICK':
+            message        = '(wimpers, feeling sick) hmmm hmmm hmm';
+            dog.positivity = r2(dog.positivity - 0.5);
+            dog.love       = r2(dog.love       - 0.5);
+            dog.energy     = r2(dog.energy     - 0.5);
+            newState = 'REST';
+            break;
+
+          case 'CLEN':
+            dog.positivity          = r2(dog.positivity + 0.01);
+            dog.love                = r2(dog.love       + 0.03);
+            dog.energy              = r2(dog.energy     - 0.0003);
+            environment.cleanliness = 0.99;
+            newState = 'REST';
+            break;
+
+          case 'REST':
+            break;
+        }
+
+        if (message && lastMessage !== message)  { log(message); lastMessage = message; }
+        if (newState) { setTimeout(() => dog.enterState(newState), 10); }
+
+        localStorage.setItem('inu_state', dog.state);
+      }
+    };
+
+    function normalize() {
+      if (environment.hour        > 24) { environment.hour = 0; }
+      if (environment.cleanliness <  0) {
+        environment.cleanliness = 0;
+        dog.enterState('SICK');
+      }
+      dog.bladder    = Math.min(Math.max(r2(dog.bladder),    0), 1);
+      dog.stomach    = Math.min(Math.max(r2(dog.stomach),    0), 1);
+      dog.energy     = Math.min(Math.max(r2(dog.energy),     0), 1);
+      dog.love       = Math.min(Math.max(r2(dog.love),       0), 1);
+      dog.positivity = Math.min(Math.max(r2(dog.positivity), 0), 1);
+    }
+
+    function updateBar(barId, valId, value, lowThreshold, highThreshold) {
+      const barEl = document.getElementById(barId);
+      const valEl = document.getElementById(valId);
+      const pct   = Math.round(value * 100);
+
+      barEl.textContent = progressBar(value);
+      valEl.textContent = pct + '%';
+
+      barEl.className = 'stat-bar ' + barClass(value, lowThreshold, highThreshold);
+    }
+
+    function populateStats() {
+      self.stateDisplay.textContent = dog.state;
+      self.timeDisplay.textContent  = environment.hour.toFixed(2) + ' hrs';
+      self.timeSmall.textContent    = environment.hour.toFixed(2) + ' hrs';
+      self.cleanPct.textContent     = Math.round(environment.cleanliness * 100) + '%';
+
+      updateBar('barStomach',    'valStomach',    dog.stomach,            dog.thresholds.stomach_down,    dog.thresholds.stomach_nice);
+      updateBar('barBladder',    'valBladder',    1 - dog.bladder,        1 - dog.thresholds.bladder_high, 1 - dog.thresholds.bladder_nice);
+      updateBar('barEnergy',     'valEnergy',     dog.energy,             dog.thresholds.energy_down,     dog.thresholds.energy_nice);
+      updateBar('barLove',       'valLove',       dog.love,               dog.thresholds.love_down,       dog.thresholds.love_nice);
+      updateBar('barPositivity', 'valPositivity', dog.positivity,         dog.thresholds.positivity_down, dog.thresholds.positivity_nice);
+      updateBar('barClean',      'valClean',      environment.cleanliness, 0.2,                           0.5);
+    }
+
+    function dogsLife() {
+      environment.hour = r2(environment.hour + 0.25);
+
+      if (dog.state === 'DEAD') { populateStats(); return; }
+
+      dog.bladder    = r2(dog.bladder    + 0.01);
+      dog.stomach    = r2(dog.stomach    - 0.01);
+      dog.love       = r2(dog.love       - 0.01);
+      dog.positivity = r2(dog.positivity - 0.01);
+
+      if (dog.bladder > dog.thresholds.bladder_high) {
+        dog.enterState('GPEE');
+        normalize();
+        populateStats();
+        return;
+      }
+      if (dog.bladder > dog.thresholds.bladder_nice) {
+        dog.enterState('BTHR');
+      }
+
+      if (dog.stomach < dog.thresholds.stomach_down) {
+        dog.enterState('RVNS');
+        normalize();
+        populateStats();
+        return;
+      }
+      if (dog.stomach < dog.thresholds.stomach_nice) {
+        dog.enterState('HNGR');
+        dog.energy = r2(dog.energy - (environment.hour > 21 || environment.hour < 6 ? 0.01 : 0.005));
+      }
+      else {
+        dog.energy = r2(dog.energy + 0.005);
+      }
+
+      if (((dog.energy + dog.love + dog.positivity) < 0.1) && (environment.cleanliness < 0.5)) {
+        dog.enterState('DEAD');
+      }
+
+      normalize();
+      populateStats();
+    }
+
+    function restart() {
+      dog.state      = 'REST';
+      dog.stomach    = 0.5;
+      dog.bladder    = 0.3;
+      dog.positivity = 0.9;
+      dog.love       = 0.6;
+      dog.energy     = 0.5;
+
+      environment.cleanliness = 0.8;
+      environment.hour        = 12;
+
+      localStorage.removeItem('inu_state');
+      lastMessage = '';
+
+      self.dialogue.value = '';
+      self.dialogue.classList.remove('dead');
+      self.btnFeed.disabled         = false;
+      self.btnPlay.disabled         = false;
+      self.btnClean.disabled        = false;
+      self.btnRestart.style.display = 'none';
+
+      populateStats();
+      log('// inu restarted.');
+    }
+
+    function userAction(state) {
+      if (dog.state === 'DEAD') { return; }
+      lastMessage = '';
+      dog.enterState(state);
+    }
+
+    self.addEventListener('keypress', (e) => {
+      switch (e.key.toLowerCase()) {
+        case 'f': userAction('FOOD'); break;
+        case 'p': userAction('PLAY'); break;
+        case 'c': userAction('CLEN'); break;
+        case 'r': restart();         break;
+        case 'q': location.href = '../../'; break;
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const savedState = localStorage.getItem('inu_state');
+      if (savedState) {
+        dog.state = savedState;
+        if (dog.state === 'DEAD') {
+          self.dialogue.classList.add('dead');
+          self.btnFeed.disabled         = true;
+          self.btnPlay.disabled         = true;
+          self.btnClean.disabled        = true;
+          self.btnRestart.style.display = 'inline-block';
+          log('// your dog is dead. press [R] to restart.');
+        }
+      }
+
+      populateStats();
+      if (dog.state !== 'DEAD') { log('// inu initialized. state: ' + dog.state); }
+      setInterval(dogsLife, 1000);
+    });
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dual Rubber Stamp</title>
+  <meta charset="utf-8" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23000008'/><text y='.9em' font-size='90' fill='%2300ffff'>⧉</text></svg>">
+  <link rel="stylesheet" href="../../resources/css/style.css">
+  <script src="../../resources/js/main.js" defer></script>
+  <style>
+    textarea {
+      width: 398px;
+      height: 400px;
+    }
+  </style>
+</head>
+<body>
+  <p><br /></p>
+  <div class="title-bar">⧉ DUAL RUBBER STAMP</div>
+  <div>
+
+    <div style="position: relative; display: inline-block;">
+      <textarea id="txtXXX" oninput="recalc()" placeholder="XXX" spellcheck="false"></textarea>
+      <span id="countXXX" style="
+        position: absolute;
+        top: 6px;
+        right: 7px;
+        font-family: 'Share Tech Mono', Consolas, 'Lucida Console', monospace;
+        font-size: 11px;
+        color: #008080;
+        pointer-events: none;
+      "></span>
+    </div>
+
+    <div style="position: relative; display: inline-block; margin: -4px">
+      <textarea id="txtYYY" oninput="recalc()" placeholder="YYY" spellcheck="false"></textarea>
+      <span id="countYYY" style="
+        position: absolute;
+        top: 6px;
+        right: 7px;
+        font-family: 'Share Tech Mono', Consolas, 'Lucida Console', monospace;
+        font-size: 11px;
+        color: #008080;
+        pointer-events: none;
+      "></span>
+    </div>
+
+    <textarea id="txtPattern" oninput="recalc()" placeholder="Pattern" style="width: 602px;" spellcheck="false"></textarea>
+
+  </div>
+  <div>
+
+    <div style="position: relative; display: inline-block;">
+      <textarea id="txtOut" placeholder="Output" spellcheck="false" style="width: 1420px;" readonly></textarea>
+      <button onclick="copyToClipboard('txtOut', 'copyBtn')" title="Copy to clipboard"
+        id="copyBtn"
+        style="
+          position: absolute;
+          top: 6px;
+          right: 6px;
+          background: transparent;
+          border: 1px solid #00ffff;
+          color: #00ffff;
+          font-family: 'Share Tech Mono', Consolas, 'Lucida Console', monospace;
+          font-size: 12px;
+          padding: 2px 8px;
+          cursor: pointer;
+          border-radius: 2px;
+          opacity: 0.75;
+          transition: background 0.15s, color 0.15s;
+          min-width: 76px;
+          min-height: 26px;
+          text-align: center;
+          vertical-align: top;
+        "
+        onmouseover="this.style.background='#00ffff';this.style.color='#000008';this.style.opacity=1"
+        onmouseout="this.style.background='transparent';this.style.color='#00ffff';this.style.opacity=0.75"
+      >⧉ copy</button>
+    </div>
+
+  </div>
+  <p><br /></p>
+  <script type="text/javascript">
+    function recalc() {
+      var XXX     = txtXXX.value.split("\n");
+      var YYY     = txtYYY.value.split("\n");
+      var pattern = txtPattern.value;
+      var output  = '';
+
+      var xxxCount = txtXXX.value.trim() === '' ? 0 : XXX.length;
+      var yyyCount = txtYYY.value.trim() === '' ? 0 : YYY.length;
+
+      countXXX.textContent = xxxCount > 0 ? xxxCount + ' lines' : '';
+      countYYY.textContent = yyyCount > 0 ? yyyCount + ' lines' : '';
+
+      var mismatch = xxxCount > 0 && yyyCount > 0 && xxxCount !== yyyCount;
+      countXXX.style.color = mismatch ? '#cc6600' : '#008080';
+      countYYY.style.color = mismatch ? '#cc6600' : '#008080';
+
+      for (let i = 0; i < XXX.length; i++) {
+        var xxx = XXX[i];
+        var yyy = YYY[i];
+        if (!yyy) yyy = '';
+        output += pattern.replace(/XXX/g, xxx).replace(/YYY/g, yyy) + '\n';
+      }
+
+      txtOut.value = output.trimEnd();
+      output = null;
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Earth Gateway — Door</title>
+  <meta charset="utf-8" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="icon" href="../../resources/img/favicon.png">
+  <link rel="stylesheet" href="../../resources/css/style.css">
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      text-align: left;
+    }
+
+    body.centering {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+
+    .viewer-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 40px;
+      background: #000008;
+      border-bottom: 1px solid #00ffff;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      padding: 0 16px;
+      font-size: 12px;
+      color: #00ffff;
+      z-index: 100;
+    }
+
+    .header-left {
+      justify-self: start;
+      color: #099;
+    }
+    .header-left:hover {
+      color: #0CC;
+    }
+    .header-center {
+      justify-self: center;
+      font-family: Arial, sans-serif;
+      font-size: 20px;
+    }
+
+    .header-right {
+      justify-self: end;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    #viewerTitle {
+      color: #ffffff;
+      flex: 1;
+    }
+
+    #viewerFrame {
+      position: fixed;
+      top: 40px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: calc(100vh - 40px);
+      width: 100%;
+      border: none;
+    }
+
+    .terminal {
+        border: 1px solid #00ffff;
+        padding: 20px 24px;
+        display: flex;
+        gap: 24px;
+        align-items: flex-start;
+        min-width: 403px;
+        transition: opacity 0.5s ease;
+    }
+
+    .terminal-torii-wrap {
+        width: 130px;
+        height: 120px;
+        overflow: hidden;
+        flex-shrink: 0;
+    }
+
+    .terminal-torii {
+      color: #ff5555;
+      font-size: 11px;
+      line-height: 1.2;
+      white-space: pre;
+      transform: scale(0.5);
+      transform-origin: top left;
+    }
+
+    .terminal-console {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 8px;
+        padding-left: 8px;
+        margin-top: 12px;
+    }
+
+    .terminal-line {
+      color: #00ffff;
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      white-space: pre;
+      min-height: 1.4em;
+    }
+
+    .terminal-line.dim {
+      color: #008080;
+    }
+
+    .cursor {
+      animation: blink 0.5s step-end infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0; }
+    }
+  </style>
+</head>
+<body class="centering">
+
+  <div class="terminal" id="terminal">
+
+    <div class="terminal-torii-wrap">
+    <pre class="terminal-torii" id="torii"></pre>
+    </div>
+
+    <div class="terminal-console">
+      <div class="terminal-line" id="line1"></div>
+      <div class="terminal-line" id="line2"></div>
+      <div class="terminal-line dim" id="line3"></div>
+      <div class="terminal-line dim" id="line4"></div>
+    </div>
+
+  </div>
+  <div class="viewer-header" id="viewerHeader" style="display: none;">
+    <a href="../../" class="footer-link header-left">← back to earthgateway.com</a>
+    <span class="header-center">⛩️</span>
+    <span class="header-right">
+      <span>⌬ earthgateway.com</span>
+      <span id="viewerTitle"></span>
+    </span>
+  </div>
+
+  <iframe id="viewerFrame" style="display: none;"></iframe>  
+  <script>
+   
+    const toriiDoorGlitchFrames = [
+`                                   :!/    
+                             ,wII!!+~    
+    .               .cvco!""~~!+!!!+     
+     :++!::cv::!!!!!""~~~~!!!++++        
+       v!!!!!~!!~~~~~!+::::::e#          
+         RPXI++  """"~   v:              
+            v::  B"~+cvvvccIIIII         
+         IIIo:IIIIIcvoww0v:#             
+            c:w          vv              
+            c:o         I:v              
+            v:          Ivv              
+            +:          ++:v             
+            ::          v+:v             
+           I++          ::::             
+           I++          v:::             
+           !+++         !!:+             
+           +!~+         :!!+             `,
+`...................................9"0...
+.............................+vHH"",(....
+....-...............-bubpX##}}4,"ET,.....
+.....9**>;;bu;;Ul"e"#!}}|}"sT,**,........
+.......u""""O}""O}&}}"*;9;;;9d"..........
+.........SOYJ,*..##!#}...u9..............
+............u99..A!i*duwwbdHHJHH.........
+.........JJHp;JJJHHbunvx/w;".............
+............b;x..........uw..............
+............d;n.........J9w..............
+............w9..........Hww..............
+............,9..........**9u.............
+............;9..........w,;w.............
+...........H,,..........9;;;.............
+...........H*,..........w9;9.............
+...........",,,.........'";,.............
+...........,h2,.........;0",.............`,  
+`                                   :!/    
+                             ,wII!!+~    
+    .               .cvco!""~~!+!!!+     
+     :++!::cv::!!!!!""~~~~!!!++++        
+       v!!!!!~!!~~~~~!+::::::e#          
+         RPXI++  """"~   v:              
+            v::  B"~+cvvvccIIIII         
+         IIIo:IIIIIcvoww0v:#             
+            c:w          vv              
+            c:o         I:v              
+            v:          Ivv              
+            +:          ++:v             
+            ::          v+:v             
+           I++          ::::             
+           I++          v:::             
+           !+++         !!:+             
+           +!~+         :!!+             `,
+`                                   ;".    
+                             +xJJ4",O    
+    -               .bvcnF!#}~!*yO!*     
+     ;,,%;;bu9:""*""!#j>}9""3,*,,        
+       v9G"!!}!"~}#~/",9;:9;;f$          
+         SOYJ,+  #!!#k   w;              
+            u99  C#*,buwvcdJHJIH         
+         IIJn9HJJHHbvnxv0u:$             
+            c;v          vw              
+            d9n         I:v              
+            u9          Huv              
+            ,:          +,;u             
+            ;9          w,9u             
+           J**          9;99             
+           J**          w;;;             
+           "*++         !"9*             
+           *=Y,         9re,             `,
+`                                   9".    
+                             ,vII@",}    
+    .               /bvco!""~}A*"!C+     
+     9++":9cw9;4!""M""(~i}!"7,,+*        
+       w!!R9W~uy~~}e~!,:9:;9;d"          
+         RPXJ,*  #""!}   v9              
+            v9:  A!~,dvwucdIIIHH         
+         HHJo9JIHJJdvovv/u:#             
+            d:w          vv              
+            d;p         I;v              
+            u;          Juv              
+            ,:          **9w             
+            ::          v+9w             
+           J,+          :9::             
+           J*+          w:;:             
+           !**,         !d:,             
+           +!E,         9hY+             `,
+`                                   9!/    
+                             +wJI'!+~    
+    /               .cuco"##~~!+!=!,     
+     :,+!;:cv9;w!|!i!"D~~}!I!,+**        
+       v!6!&"~"l~~L~~!+:9;9;:f#          
+         QPWJ*+  !#"#}   v:              
+            v::  A"^+cwuvccIHHJJ         
+         IJIo;JHIIHcvoww/v:#             
+            c9w          vv              
+            c9o         H;v              
+            v9          Ivv              
+            ,:          +*:u             
+            :;          u+:u             
+           I*+          ::::             
+           H,+          v::;             
+           !+++         !!:,             
+           *!}+         :g!+             `,
+`                                   :!/    
+                             ,wII!U+~    
+    .               .cvco!!"~~!+!!!+     
+     ;+,"::cu::!!!!"""~~}R!!!++++        
+       v!!h!!~!!~}}~~!+:::;::e#          
+         RPXI++  "!""w   v:              
+            w::  B"~+cvvvccIIIII         
+         IIIo9IIHIJbwovw0v:#             
+            c:v          vv              
+            c:o         I:v              
+            v:          Ivv              
+            +:          ++:v             
+            ::          v,:w             
+           J*+          9:::             
+           I++          v:9;             
+           !+++         !!:+             
+           +!~+         :!!+             `,
+`                                   :!/    
+                             ,wII!!+~    
+    .               .cvco!""~~!+!!!+     
+     :++!::cv::!!!!!""~~~~!!!++++        
+       v!!!!!~!!~~~~~!+::::::e#          
+         RPXI++  """"~   v:              
+            v::  B"~+cvvvccIIIII         
+         IIIo:IIIIIcvoww0v:#             
+            c:w          vv              
+            c:o         I:v              
+            v:          Ivv              
+            +:          ++:v             
+            ::          v+:v             
+           I++          ::::             
+           I++          v:::             
+           !+++         !!:+             
+           +!~+         :!!+             `
+];
+
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    function showViewer(site) {
+      self.terminal.style.opacity = 0;
+
+      setTimeout(() => {
+        self.terminal.style.display = 'none';
+        document.body.classList.remove('centering');
+
+        self.viewerTitle.textContent = site.title;
+        self.viewerFrame.src         = site.URL;
+
+        self.viewerHeader.style.display = 'grid';
+        self.viewerFrame.style.display  = 'block';
+      }, 500);
+    }  
+
+    const cursor = document.createElement('span');
+    cursor.className   = 'cursor';
+    cursor.textContent = '_';
+
+    async function typeLine(el, text, delay = 30) {
+      el.classList.remove('dim');
+      el.appendChild(cursor);
+
+      for (const char of text) {
+        el.insertBefore(document.createTextNode(char), cursor);
+        await sleep(delay);
+      }
+    }
+
+    async function playTypingSequence(site) {
+      await typeLine(self.line1, 'EARTHGATEWAY.COM');
+      await sleep(200);
+
+      await typeLine(self.line2, 'ESTABLISHING CONNECTION...');
+      await sleep(200);
+
+      await typeLine(self.line3, 'ROUTING TO REMOTE SYSTEM...');
+      await sleep(200);
+
+      await typeLine(self.line4, 'ACCESS GRANTED');
+      await sleep(500);
+
+      cursor.remove();
+      showViewer(site);
+    }
+
+    const toriiFrameDurations = [400, 400, 200, 400, 400, 400, 400];
+
+    function playToriiSequence() {
+      let frameIndex = 0;
+
+      function showNextFrame() {
+        self.torii.textContent = toriiDoorGlitchFrames[frameIndex];
+
+        if (frameIndex < toriiFrameDurations.length) {
+          setTimeout(() => {
+            frameIndex++;
+            showNextFrame();
+          }, toriiFrameDurations[frameIndex]);
+        }
+      }
+
+      showNextFrame();
+    }
+
+    document.addEventListener(
+      'DOMContentLoaded', 
+      () => {
+        self.torii.textContent = toriiDoorGlitchFrames[0];
+
+        const doorSites = {
+          "turing": { URL: 'http://firoved.com/github/turing-complete/',          title: 'Turing Complete'     },
+          "6502":   { URL: 'http://firoved.com/github/javascript-cpu-simulator/', title: '6502 CPU Simulator'  },
+          "lcars":  { URL: 'http://firoved.com/github/bbCPU-simulator/',          title: 'Internal CPU Ops'    },
+        };
+
+        const key  = window.location.search.replace('?', '');
+        const site = doorSites[key];
+
+        if (!site) {
+          location.href = '../../';
+        }
+        else {
+          playToriiSequence();
+          playTypingSequence(site);   
+        }
+      }
+    );
+
+
+  </script>
+</body>
+</html>

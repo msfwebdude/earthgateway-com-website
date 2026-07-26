@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!--
+    ASCII globe animation inspired by asciiart.website/art/2531
+    Original concept adapted and animated using original methodology.
+  -->
+  <title>Earth Gateway</title>
+  <meta charset="utf-8" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="icon" href="./resources/img/favicon.png">
+  <link rel="stylesheet" href="resources/css/style.css">
+  <style>
+    body {
+      text-align: left;
+    }
+
+    .bbs-wrap {
+      width: min(1100px, 90vw);
+      margin: 0 auto;
+      padding: 20px 0;
+    }
+
+    /*-- header --*/
+    .header-box {
+      border: 1px dotted #005151;
+      padding: 12px 16px;
+      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .header-wordmark {
+      color: #ffff00;
+      font-size: 18px;
+      letter-spacing: 0.15em;
+      text-shadow: 0 0 8px rgba(255, 255, 0, 0.4);
+      white-space: nowrap;
+    }
+
+    .header-wordmark span {
+      color: #ffffff;
+      font-size: 11px;
+      display: block;
+      letter-spacing: 0.1em;
+      margin-top: 4px;
+      text-shadow: none;
+      opacity: 0.6;
+    }
+
+    .header-torii {
+      color: #ff5555;
+      font-size: 11px;
+      line-height: 1.2;
+      white-space: pre;
+      opacity: 0.85;
+      flex: 1;
+      text-align: right;
+    }
+
+    .header-globe {
+      color: #00ffff;
+      font-size: 9px;
+      line-height: 1.15;
+      white-space: pre;
+      text-shadow: 0 0 4px rgba(0, 255, 255, 0.4);
+      flex-shrink: 0;
+      transform: scale(0.65);
+      transform-origin: center;
+    }
+
+    .sections-row {
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
+    }
+
+    .section {
+      flex: 1;
+    }    
+    /*-- section header --*/
+    .section-header {
+      color: #ffff00;
+      font-size: 13px;
+      letter-spacing: 0.12em;
+      padding: 4px 10px;
+      border: 3px double #00ffff;
+      margin: 20px 0 8px 0;
+    }
+
+    /*-- door items --*/
+    .door-list {
+      list-style: none;
+      margin: 0 0 0 2px;
+      padding: 0;
+    }
+
+    .door-list li {
+      margin: 0;
+    }
+
+    .door-list a {
+      display: block;
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 12px;
+      padding: 2px 4px;
+      letter-spacing: 0.05em;
+      transition: background 0.12s, color 0.12s;
+    }
+
+    .door-list a:hover {
+      background: #ffffff;
+      color: #000008;
+    }
+
+    .door-list a .key {
+      color: #00ffff;
+      font-weight: bold;
+    }
+
+    .door-list a:hover .key {
+      color: #000008;
+    }
+
+    .door-list .soon {
+      color: #008080;
+      font-size: 12px;
+      padding: 2px 4px;
+      font-style: normal;
+    }
+
+    /*-- footer --*/
+    .footer {
+      margin-top: 24px;
+      padding-top: 8px;
+      border-top: 1px solid #003333;
+      color: #004444;
+      font-size: 10px;
+      letter-spacing: 0.05em;
+    }
+  </style>
+</head>
+<body>
+  <div class="bbs-wrap">
+
+    <!-- header -->
+    <div class="header-box">
+
+      <div class="header-wordmark">
+        EARTHGATEWAY
+        <span>earthgateway.com</span>
+      </div>
+
+      <pre class="header-torii" id="torii">
+                                         
+                                   :!/    
+                             ,wII!!+~    
+    .               .cvco!""~~!+!!!+     
+     :++!::cv::!!!!!""~~~~!!!++++        
+       v!!!!!~!!~~~~~!+::::::e#          
+         RPXI++  """"~   v:              
+            v::  B"~+cvvvccIIIII         
+         IIIo:IIIIIcvoww0v:#             
+            c:w          vv              
+            c:o         I:v              
+            v:          Ivv              
+            +:          ++:v             
+            ::          v+:v             
+           I++          ::::             
+           I++          v:::             
+           !+++         !!:+             
+           +!~+         :!!+             
+
+      </pre>
+
+      <pre class="header-globe" id="globe">loading...</pre>
+
+    </div>
+
+    <div class="sections-row">
+
+      <div class="section">
+        <div class="section-header">TOOLS</div>
+        <ul class="door-list">
+          <li><a href="./bbs/dual-rubber-stamp/">[<span class="key">D</span>] Dual Rubber Stamp</a></li>
+          <li><a href="./bbs/generate-strings/">[<span class="key">G</span>] Generate Strings</a></li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <div class="section-header">MACHINE ROOM</div>
+        <ul class="door-list">
+          <li><a href="bbs/door/?6502">[<span class="key">C</span>] 6502 CPU Simulator</a></li>
+          <li><a href="bbs/door/?turing">[<span class="key">T</span>] Turing Complete</a></li>
+          <li><a href="bbs/door/?lcars">[<span class="key">L</span>] LCARS CPU Controller Simulator</a></li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <div class="section-header">THE LAB</div>
+        <ul class="door-list">
+          <li><a href="./bbs/inu-fsm/">[<span class="key">I</span>] Inu - Finite State Machine</a></li>
+          <li><a href="./bbs/mini-nnet/">[<span class="key">N</span>] Mini NNET</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- footer -->
+    <div class="footer">
+      earthgateway.com &nbsp;|&nbsp; <span id="copyright"></span> &nbsp;|&nbsp; <a href="./bbs/mit-license/" class="footer-link">MIT License</a>
+    </div>
+
+  </div>
+
+  <script>
+    self.copyright.innerHTML = `Copyright (c) ${(new Date()).getFullYear()} <a href="./bbs/sysop/" class="footer-link">Mike Firoved</a>`;
+    const toriiFrames = [
+      `                                         
+                                   :!/    
+                             ,wII!!+~    
+    .               .cvco!""~~!+!!!+     
+     :++!::cv::!!!!!""~~~~!!!++++        
+       v!!!!!~!!~~~~~!+::::::e#          
+         RPXI++  """"~   v:              
+            v::  B"~+cvvvccIIIII         
+         IIIo:IIIIIcvoww0v:#             
+            c:w          vv              
+            c:o         I:v              
+            v:          Ivv              
+            +:          ++:v             
+            ::          v+:v             
+           I++          ::::             
+           I++          v:::             
+           !+++         !!:+             
+           +!~+         :!!+             
+      
+           `,
+      `                                         
+                                   :|/    
+                             ,MII!!+~    
+    .               .cvco!""~~!+!!!+     
+     :++!;:cv::!!!!!""~~~~!!!++++        
+       v!!!!!~!!~~~~~!+::::::e#          
+         RPXI++  """"~   v:              
+            v::  B"~+cvvvccIXIII         
+         IIIo:IIIIIcvoww0v:#             
+            c:w          vv              
+            p:o         I:v              
+            v:          Ivv              
+            +:          ++:v             
+            ::          v+:M             
+           I++          ::::             
+           I++          v:::             
+           !+++         !!:*             
+           +!~+         :!!+             
+      
+           `
+    ];
+    const globeFrames = [
+      // frame 0
+      [
+        `            ,,,,,,`,
+        `       .-#'9MMHb':'-,o,`,
+        `     .oH":HH\`, "' ' -*R&o,`,
+        `    dMMM*""'\`'      .oM"HM?.`,
+        `  ,MMM'          "HLbd< ?&H\\`,
+        ` .:MH ."           \` MM  MM&b`,
+        `. "*H    -        &MMMMMMMMMH:`,
+        `.    VHo_       MMMMMMMMMMMMM.`,
+        `.   dMMMMMMb      *MMMMMMMMMP.`,
+        `.    MMMMMMMP        *MMMMMP .`,
+        `     \`#MMMMM           MM6P ,`,
+        ` '    \`MMMP"           HM*\`,`,
+        `  '    :MM             .- ,`,
+        `   '.   \`#?..  .        .'`,
+        `      -.   .         .-^`,
+        `        ''-.oo,oo.-''       `,
+      ],
+      // frame 1
+      [
+        `            ,,,,,,`,
+        `       .-o#'9MMHb':'-,,`,
+        `     .ooH":HH\`, "' ' -*R&,`,
+        `    d?MMM*""'\`'      .oM"HM.`,
+        `  ,M\\MM'          "HLbd< ?&H`,
+        ` .&:MH ."           \` MM  MMb`,
+        `.  "*H    -        &MMMMMMMMM:`,
+        `.     VPo_       MMMMMMMMMMMM.`,
+        `.    dMMMMMMb      *MMMMMMMMM.`,
+        `.     MMMMMMMP        *MMMMMP.`,
+        `      \`#MMMMM           MM6P,`,
+        ` '     \`MMMP"           HM*,`,
+        `  '     :MM             .-,`,
+        `   '.    \`#?..  .       .'`,
+        `      -.    .        .-^`,
+        `        ''-.ooo,o.-''       `,
+      ],
+      // frame 2
+      [
+        `            ,,,,,,`,
+        `       .-,o#'9MMHb':'-,`,
+        `     .o&oH":HH\`, "' ' -*R,`,
+        `    dM?MMM*""'\`'      .oM"H.`,
+        `  ,HM\\MM'          "HLbd< ?&`,
+        ` .M&:MH ."           \` MM  Mb`,
+        `.   "*H    -        &MMMMMMMM:`,
+        `.      VPo_       MMMMMMMMMMM.`,
+        `.     dMMMMMMb      *MMMMMMMM.`,
+        `.      MMMMMMMP        *MMMMM.`,
+        `       \`#MMMMM           MM6,`,
+        ` '      \`MMMP"           H*,`,
+        `  '      :MM             .,`,
+        `   '.     \`#?..  .      .'`,
+        `      -.     .       .-^`,
+        `        ''-.oooo,.-''       `,
+      ],
+      // frame 3
+      [
+        `            ,,,,,,`,
+        `       .--,o#'9MMHb':',`,
+        `     .oR&oH":HH\`, "' ' -*,`,
+        `    dHM?MMM*""'\`'      .oM".`,
+        `  ,?HM\\MM'          "HLbd< &`,
+        ` .MM&:MH ."           \` MM  b`,
+        `.    "*H    -        &MMMMMMM:`,
+        `.       VPo_       MMMMMMMMMM.`,
+        `.      dMMMMMMb      *MMMMMMM.`,
+        `.       MMMMMMMP        *MMMM.`,
+        `        \`#MMMMM           MM,`,
+        ` '       \`MMMP"           H,`,
+        `  '       :MM             ,`,
+        `   '.      \`#?..  .     .'`,
+        `      -.      .      .-^`,
+        `        ''-.,oooo.-''       `,
+      ],
+      // frame 4
+      [
+        `            ,,,,,,`,
+        `       .-'-,o#'9MMHb':,`,
+        `     .o*R&oH":HH\`, "' ' -,`,
+        `    d"HM?MMM*""'\`'      .oM.`,
+        `  ,L?HM\\MM'          "HLbd<&`,
+        ` . MM&:MH ."           \` MM b`,
+        `.     "*H    -        &MMMMMM:`,
+        `.        VPo_       MMMMMMMMM.`,
+        `.       dMMMMMMb      *MMMMMM.`,
+        `.        MMMMMMMP        *MMM.`,
+        `         \`#MMMMM           M,`,
+        ` '        \`MMMP"           ,`,
+        `  '        :MM            ,`,
+        `   '.       \`#?..  .    .'`,
+        `      -.       .     .-^`,
+        `        ''-.o,ooo.-''       `,
+      ],
+      // frame 5
+      [
+        `            ,,,,,,`,
+        `       .-,'-,o#'9MMHb',`,
+        `     .,o*R&oH":HH\`, "' '-,`,
+        `    dM"HM?MMM*""'\`'      .o.`,
+        `  ,kL?HM\\MM'          "HLbd&`,
+        ` .  MM&:MH ."           \` MMb`,
+        `.      "*H    -        &MMMMM:`,
+        `.         VPo_       MMMMMMMM.`,
+        `.        dMMMMMMb      *MMMMM.`,
+        `.         MMMMMMMP        *MM.`,
+        `          \`#MMMMM           ,`,
+        ` '         \`MMMP"          ,`,
+        `  '         :MM           ,`,
+        `   '.        \`#?..  .   .'`,
+        `      -.        .    .-^`,
+        `        ''-.oo,oo.-''       `,
+      ], 
+      // frame 6
+      [
+        `            ,,,,,,`,
+        `       .-','-,o#'9MMHb,`,
+        `     .-,o*R&oH":HH\`, "' ' ,`,
+        `    doM"HM?MMM*""'\`'      ..`,
+        `  ,dkL?HM\\MM'          "HLb&`,
+        ` .   MM&:MH ."           \` Mb`,
+        `.       "*H    -        &MMMM:`,
+        `.          VPo_       MMMMMMM.`,
+        `.         dMMMMMMb      *MMMM.`,
+        `.          MMMMMMMP        *M.`,
+        `           \`#MMMMM          ,`,
+        ` '          \`MMMP"         ,`,
+        `  '          :MM          ,`,
+        `   '.         \`#?..  .  .'`,
+        `      -.        .    .-^`,
+        `        ''-.oo,oo.-''       `,
+      ], 
+      // frame 7
+      [
+        `            ,,,,,,`,
+        `       .-b','-,o#'9MMH,`,
+        `     .h-,o*R&oH":HH\`, "' ',`,
+        `    dWoM"HM?MMM*""'\`'      .`,
+        `  ,bdkL?HM\\MM'          "HL&`,
+        ` .    MM&:MH ."           \` b`,
+        `.        "*H    -        &MMM:`,
+        `.           VPo_       MMMMMM.`,
+        `.          dMMMMMMb      *MMM.`,
+        `.           MMMMMMMP        *.`,
+        `            \`#MMMMM         ,`,
+        ` '           \`MMMP"        ,`,
+        `  '           :MM         ,`,
+        `   '.          \`#?..  . .'`,
+        `      -.         .   .-^`,
+        `        ''-.ooo,o.-''       `,
+      ], 
+    ];
+
+
+    let globeFrame  = 0;
+
+    let renderGlobe = () => {
+      self.globe.textContent = globeFrames[globeFrame].join('\n');
+      globeFrame = (globeFrame + 1) % globeFrames.length;
+    }
+
+    renderGlobe();
+    setInterval(renderGlobe, 2200);
+
+    let setToriiGlitch   = () => { self.torii.textContent = toriiFrames[1]; };
+    let resetToriiGlitch = () => { self.torii.textContent = toriiFrames[0]; };
+
+    function toriiGlitch() {
+      if (Math.random() < 0.28) {
+        setToriiGlitch();
+        setTimeout(
+          () => { 
+            resetToriiGlitch();
+            setTimeout(
+              () => {
+                setToriiGlitch();
+                setTimeout(resetToriiGlitch, 500);                
+              },
+              100
+            );
+          }, 
+          500
+        );
+      }
+    }
+
+    setInterval(toriiGlitch, 2000);    
+
+    self.addEventListener(
+      'keypress', 
+      (e) => {
+        let key          = e.key.toLowerCase();
+        let hotkeyRoutes = {
+          'd': './bbs/dual-rubber-stamp/',
+          'g': './bbs/generate-strings/',
+          'i': './bbs/inu-fsm/',
+          'n': './bbs/mini-nnet/',
+          'c': './bbs/door/?6502',
+          't': './bbs/door/?turing',
+          'l': './bbs/door/?lcars',
+        };
+        if (key in hotkeyRoutes) { location.href = hotkeyRoutes[key]; }
+      }
+    );
+  </script>
+
+</body>
+</html>
