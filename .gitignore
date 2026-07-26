@@ -1,0 +1,26 @@
+# Dependencies
+node_modules/
+
+# Node script scratch files (the torii glitch generator, etc.)
+# adjust the folder name to match yours
+scripts/input.txt
+scripts/output.txt
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment / secrets
+.env
+.env.local
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*~
