@@ -4,6 +4,21 @@ body {
   font-family: 'Share Tech Mono', Consolas, 'Lucida Console', monospace;
 }
 
+.back-link {
+  font-size: 11px;
+  margin-bottom:-14px;
+  text-align: left;
+}
+
+.back-link a {
+  color: #099;
+  text-decoration: none;
+}
+
+.back-link a:hover {
+  color: #0CC;
+}
+
 .title-bar {
   color: #ffff00;
   font-size: 13px;
