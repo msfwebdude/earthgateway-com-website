@@ -14,6 +14,14 @@ body {
   text-shadow: 0 0 5px rgba(255, 255, 0, 0.4);
 }
 
+.subtitle {
+  color: darkcyan;
+  font-size: 12px;
+  opacity: 0.5;
+  padding-bottom: 10px;
+  font-family: 'Share Tech Mono', Consolas, 'Lucida Console', monospace;
+}
+
 textarea {
   background-color: #000008;
   border: solid 1px #00ffff;
