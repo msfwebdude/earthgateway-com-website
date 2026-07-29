@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Pathfinding</title>
+  <meta charset="utf-8" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="icon" href="../../resources/img/favicon.png">
+  <link rel="stylesheet" href="../../resources/css/style.css">
+  <script src="../../resources/js/main.js" defer></script>
+  <style>
+    body {
+      text-align: left;
+    }
+
+    .bbs-wrap {
+      width: min(1100px, 90vw);
+      margin: 0 auto;
+      padding: 20px 0;
+      text-align: center;
+    }
+
+    .grid {
+      display: inline-grid;
+      grid-template-columns: repeat(32, 32px);
+      grid-template-rows: repeat(20, 32px);
+      gap: 2px;
+      margin-top: 10px;
+    }
+
+    .cell {
+      width: 32px;
+      height: 32px;
+      background: #1a1a1a;
+      border: 1px solid #003333;
+      cursor: pointer;
+      font-size: 7px;
+      color: #008080;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      line-height: 1.1;
+      transition: background 0.08s;
+      user-select: none;
+    }
+
+    .cell:hover {
+      border-color: #00ffff;
+    }
+
+    .cell.wall {
+      background: #ffffff;
+    }
+
+    .cell.start {
+      background: #00ff00;
+      color: #000000;
+    }
+
+    .cell.end {
+      background: #ff0000;
+      color: #000000;
+    }
+
+    .cell.open {
+      background: #004444;
+    }
+
+    .cell.closed {
+      background: #003333;
+    }
+
+    .cell.path {
+      background: #ffff00;
+      color: #000008;
+    }    
+
+    .controls {
+      margin-top: 10px;
+    }
+
+    .log-panel {
+      margin-top: 10px;
+    }
+
+    .log-panel textarea {
+      margin-left: 5px;
+      width: min(1083px, 90vw);
+      height: 100px;
+    }
+
+    .ctrl-btn {
+      background: transparent;
+      border: 1px solid #00ffff;
+      color: #00ffff;
+      font-family: 'Share Tech Mono', Consolas, 'Lucida Console', monospace;
+      font-size: 12px;
+      padding: 3px 12px;
+      cursor: pointer;
+      border-radius: 2px;
+      opacity: 0.75;
+      transition: background 0.12s, color 0.12s;
+      min-width: 76px;
+      text-align: center;
+    }
+
+    .ctrl-btn:hover {
+      background: #00ffff;
+      color: #000008;
+      opacity: 1;
+    }
+
+    .ctrl-btn.danger {
+      border-color: #ff5555;
+      color: #ff5555;
+    }
+
+    .ctrl-btn.danger:hover {
+      background: #ff5555;
+      color: #000008;
+    }
+  </style>
+</head>
+<body>
+  <div class="bbs-wrap">
+
+    <div class="back-link"><a href="../../">← back to earthgateway.com</a></div>
+    <div class="title-bar">⇝ PATHFINDING</div>
+
+    <div class="controls">
+      <button class="ctrl-btn" onclick="reset()" id="btnReset">[<b>R</b>]eset and Clear Grid</button>
+    </div>
+
+    <div class="grid" id="grid"></div>
+
+    <div class="log-panel">
+      <textarea id="log" readonly spellcheck="false" placeholder="// pathfinding log"></textarea>
+    </div>
+
+  </div>
+
+  <script>
+    const COLS        = 32;
+    const ROWS        = 20;
+    const CELL_EMPTY  = 'empty';
+    const CELL_WALL   = 'wall';
+    const CELL_START  = 'start';
+    const CELL_END    = 'end';
+    const CELL_OPEN   = 'open';
+    const CELL_CLOSED = 'closed';
+    const CELL_PATH   = 'path';
+
+    const STEP_DELAY  = 30;
+
+    let animationId   = null;    
+
+    let grid    = [];
+    let startCell = null;
+    let endCell   = null;
+
+    function log(message) {
+      self.log.value += message + '\n';
+      self.log.scrollTop = self.log.scrollHeight;
+    }
+
+    function buildGrid() {
+      self.grid.innerHTML = '';
+      grid = [];
+
+      for (let row = 0; row < ROWS; row++) {
+        grid[row] = [];
+        for (let col = 0; col < COLS; col++) {
+          const cell  = document.createElement('div');
+          cell.className = 'cell';
+          cell.dataset.row  = row;
+          cell.dataset.col  = col;
+          cell.dataset.type = CELL_EMPTY;
+
+          cell.addEventListener('click', () => toggleWall(row, col, cell));
+
+          self.grid.appendChild(cell);
+          grid[row][col] = cell;
+        }
+      }
+    }
+
+    function toggleWall(row, col, cell) {
+      if (cell.dataset.type === CELL_START || cell.dataset.type === CELL_END) {
+        return;
+      }
+
+      if (cell.dataset.type === CELL_WALL) {
+        cell.dataset.type = CELL_EMPTY;
+        cell.classList.remove('wall');
+        log(`// wall removed at (${row}, ${col})`);
+      }
+      else {
+        cell.dataset.type = CELL_WALL;
+        cell.classList.add('wall');
+        log(`// wall added at (${row}, ${col})`);
+      }
+
+      runPathfinding();
+    }
+
+    function placeStartEnd() {
+      const startRow = Math.floor(Math.random() * ROWS);
+      const endRow   = Math.floor(Math.random() * ROWS);
+
+      startCell = grid[startRow][0];
+      startCell.dataset.type = CELL_START;
+      startCell.classList.add('start');
+      startCell.textContent  = 'S';
+
+      endCell = grid[endRow][COLS - 1];
+      endCell.dataset.type = CELL_END;
+      endCell.classList.add('end');
+      endCell.textContent  = 'E';
+
+      log(`// start at (${startRow}, 0)`);
+      log(`// end at (${endRow}, ${COLS - 1})`);
+    }
+
+    function reset() {
+      if (animationId) { clearTimeout(animationId); }
+      self.log.value = '';
+      buildGrid();
+      placeStartEnd();
+      log('// grid reset. click cells to add walls.');
+      runPathfinding();
+    }
+
+    function clearPath() {
+      for (let row = 0; row < ROWS; row++) {
+        for (let col = 0; col < COLS; col++) {
+          const cell = grid[row][col];
+          const type = cell.dataset.type;
+
+          if (type === CELL_OPEN || type === CELL_CLOSED || type === CELL_PATH) {
+            cell.dataset.type = CELL_EMPTY;
+            cell.classList.remove('open', 'closed', 'path');
+            cell.textContent = '';
+          }
+
+          if (type === CELL_START) { cell.textContent = 'S'; }
+          if (type === CELL_END)   { cell.textContent = 'E'; }
+        }
+      }
+    }
+
+    function getNeighbors(row, col) {
+      const directions = [
+        [-1,  0, 10], [ 1,  0, 10], [ 0, -1, 10], [ 0,  1, 10],
+        [-1, -1, 14], [-1,  1, 14], [ 1, -1, 14], [ 1,  1, 14]
+      ];
+
+      const neighbors = [];
+
+      for (const [dRow, dCol, cost] of directions) {
+        const nRow = row + dRow;
+        const nCol = col + dCol;
+
+        if (nRow < 0 || nRow >= ROWS || nCol < 0 || nCol >= COLS) { continue; }
+
+        const cell = grid[nRow][nCol];
+        if (cell.dataset.type === CELL_WALL) { continue; }
+
+        neighbors.push({ row: nRow, col: nCol, cost: cost, cell: cell });
+      }
+
+      return neighbors;
+    }
+
+    function heuristic(row1, col1, row2, col2) {
+      const dx = Math.abs(row1 - row2);
+      const dy = Math.abs(col1 - col2);
+      return Math.round(Math.sqrt(dx * dx + dy * dy) * 10);
+    }
+
+    function runPathfinding() {
+      if (animationId) { clearTimeout(animationId); }
+      clearPath();
+
+      const startRow = parseInt(startCell.dataset.row);
+      const startCol = parseInt(startCell.dataset.col);
+      const endRow   = parseInt(endCell.dataset.row);
+      const endCol   = parseInt(endCell.dataset.col);
+
+      const openList = [];
+      const cameFrom = {};
+      const gScore   = {};
+      const fScore   = {};
+
+      const key = (r, c) => `${r},${c}`;
+
+      gScore[key(startRow, startCol)] = 0;
+      fScore[key(startRow, startCol)] = heuristic(startRow, startCol, endRow, endCol);
+
+      openList.push({ row: startRow, col: startCol, f: fScore[key(startRow, startCol)] });
+
+      log('// pathfinding started...');
+
+      function step() {
+        if (openList.length === 0) {
+          log('// no path found.');
+          return;
+        }
+
+        openList.sort((a, b) => a.f - b.f);
+        const current = openList.shift();
+        const cKey    = key(current.row, current.col);
+        const cell    = grid[current.row][current.col];
+
+        if (current.row === endRow && current.col === endCol) {
+          tracePath(cameFrom, current.row, current.col);
+          return;
+        }
+
+        if (cell.dataset.type !== CELL_START) {
+          cell.dataset.type = CELL_CLOSED;
+          cell.classList.add('closed');
+          cell.textContent  = fScore[cKey];
+        }
+
+        const neighbors = getNeighbors(current.row, current.col);
+
+        for (const neighbor of neighbors) {
+          const nKey       = key(neighbor.row, neighbor.col);
+          const tentativeG = gScore[cKey] + neighbor.cost;
+
+          if (tentativeG < (gScore[nKey] ?? Infinity)) {
+            cameFrom[nKey] = cKey;
+            gScore[nKey]   = tentativeG;
+            const h        = heuristic(neighbor.row, neighbor.col, endRow, endCol);
+            fScore[nKey]   = tentativeG + h;
+
+            const alreadyOpen = openList.some(n => n.row === neighbor.row && n.col === neighbor.col);
+
+            if (!alreadyOpen) {
+              openList.push({ row: neighbor.row, col: neighbor.col, f: fScore[nKey] });
+
+              if (neighbor.cell.dataset.type !== CELL_END) {
+                neighbor.cell.dataset.type = CELL_OPEN;
+                neighbor.cell.classList.add('open');
+                neighbor.cell.textContent  = fScore[nKey];
+              }
+            }
+          }
+        }
+
+        animationId = setTimeout(step, STEP_DELAY);
+      }
+
+      step();
+    }
+
+    function tracePath(cameFrom, endRow, endCol) {
+      const key       = (r, c) => `${r},${c}`;
+      let currentKey  = key(endRow, endCol);
+      let pathLength  = 0;
+
+      while (cameFrom[currentKey]) {
+        currentKey = cameFrom[currentKey];
+        const [r, c] = currentKey.split(',').map(Number);
+        const cell   = grid[r][c];
+
+        if (cell.dataset.type !== CELL_START) {
+          cell.dataset.type = CELL_PATH;
+          cell.classList.remove('open', 'closed');
+          cell.classList.add('path');
+          pathLength++;
+        }
+      }
+
+      log(`// path found. length: ${pathLength} steps.`);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      buildGrid();
+      placeStartEnd();
+      log('// pathfinding initialized. click cells to add walls.');
+      runPathfinding();
+    });
+
+    self.addEventListener('keypress', (e) => {
+      switch (e.key.toLowerCase()) {
+        case 'r': reset(); break;
+      }
+    });
+  </script>
+</body>
+</html>
