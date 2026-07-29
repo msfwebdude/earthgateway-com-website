@@ -159,6 +159,51 @@
     let startCell = null;
     let endCell   = null;
 
+    let painting    = false;
+    let paintMode   = null;
+
+    function startPainting(row, col, cell) {
+      if (cell.dataset.type === CELL_START || cell.dataset.type === CELL_END) {
+        return;
+      }
+
+      painting = true;
+
+      if (cell.dataset.type === CELL_WALL) {
+        paintMode = 'erase';
+      }
+      else {
+        paintMode = 'draw';
+      }
+
+      applyPaint(row, col, cell);
+    }
+
+    function applyPaint(row, col, cell) {
+      if (cell.dataset.type === CELL_START || cell.dataset.type === CELL_END) {
+        return;
+      }
+
+      if (paintMode === 'draw' && cell.dataset.type !== CELL_WALL) {
+        cell.dataset.type = CELL_WALL;
+        cell.classList.remove('open', 'closed', 'path');
+        cell.classList.add('wall');
+        cell.textContent = '';
+      }
+      else if (paintMode === 'erase' && cell.dataset.type === CELL_WALL) {
+        cell.dataset.type = CELL_EMPTY;
+        cell.classList.remove('wall');
+        cell.textContent = '';
+      }
+    }
+
+    function stopPainting() {
+      if (painting) {
+        painting = false;
+        runPathfinding();
+      }
+    }
+
     function log(message) {
       self.log.value += message + '\n';
       self.log.scrollTop = self.log.scrollHeight;
@@ -177,7 +222,14 @@
           cell.dataset.col  = col;
           cell.dataset.type = CELL_EMPTY;
 
-          cell.addEventListener('click', () => toggleWall(row, col, cell));
+          cell.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            startPainting(row, col, cell);
+          });
+
+          cell.addEventListener('mouseover', () => {
+            if (painting) { applyPaint(row, col, cell); }
+          });
 
           self.grid.appendChild(cell);
           grid[row][col] = cell;
@@ -197,7 +249,9 @@
       }
       else {
         cell.dataset.type = CELL_WALL;
+        cell.classList.remove('open', 'closed', 'path');
         cell.classList.add('wall');
+        cell.textContent = '';
         log(`// wall added at (${row}, ${col})`);
       }
 
@@ -388,6 +442,9 @@
         case 'r': reset(); break;
       }
     });
+
+    self.addEventListener('mouseup', stopPainting);
+    
   </script>
 </body>
 </html>
